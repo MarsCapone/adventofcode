@@ -1,13 +1,21 @@
 from utils import input_file
 from itertools import product
+from typing import Iterable
+from collections import Counter
 
 with input_file(4) as f:
     inp = [list(line.strip()) for line in f.readlines()]
 
+Grid = list[list[str]]
 
-positions = tuple(p for p in product([0, 1, -1], repeat=2) if p != (0, 0))
+POSITIONS = tuple(p for p in product([0, 1, -1], repeat=2) if p != (0, 0))
 
-def safe_coord(grid: list[tuple[str, ...]], ri: int, ci: int) -> str | None:
+def neighbours_of_cell(grid: Grid, cell: tuple[int, int]) -> Iterable[str]:
+    neighbour_coords = [tuple(map(sum, zip(cell, pos))) for pos in POSITIONS]
+    return filter(None, (safe_coord(grid, *coord) for coord in neighbour_coords))
+
+
+def safe_coord(grid: Grid, ri: int, ci: int) -> str | None:
     if 0 <= ri < len(grid) and 0 <= ci < len(grid[ri]):
         return grid[ri][ci]
     return None
@@ -23,18 +31,14 @@ def remove_rolls(grid: list[list[str]]) -> tuple[int, list[list[str]]]:
     # copy the grid so we can modify
     grid = [[l for l in line] for line in grid]
 
-    for ri, row in enumerate(grid):
+    for ri in range(len(grid)):
         for ci, val in enumerate(grid[ri]):
             if val != "@":
                 # not a roll, so we don't care
                 continue
 
-            neighboring_rolls = 0
-            for pos in positions:
-                neighbour_coord = tuple(map(sum, zip((ri, ci), pos)))
-                neighbour = safe_coord(grid, *neighbour_coord)
-                if neighbour and neighbour == "@":
-                    neighboring_rolls += 1
+            neighbours = Counter(neighbours_of_cell(grid, (ri, ci)))
+            neighboring_rolls = neighbours["@"]
         
             if neighboring_rolls < 4:
                 total += 1
@@ -45,18 +49,16 @@ def remove_rolls(grid: list[list[str]]) -> tuple[int, list[list[str]]]:
     
     return total, grid
 
-def print_grid(grid: list[list[str]]) -> None:
-    print("\n".join("".join(line) for line in grid))
-
-
 total = 0
 removed, grid = remove_rolls(inp)
+
+print("Part 1:", removed)
 
 while removed > 0:
     total += removed
     removed, grid = remove_rolls(grid)    
 
-print(total)
+print("Part 2:", total)
 
 
 
