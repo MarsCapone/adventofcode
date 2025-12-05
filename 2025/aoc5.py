@@ -15,10 +15,7 @@ for ing in ingredients:
 
 print("Part 1:", fresh)
 
-
-
 sorted_ranges = sorted(tuples, key=tuple)
-
 merged_ranges = [sorted_ranges[0]]
 
 for sr in sorted_ranges[1:]:
