@@ -24,3 +24,7 @@ def input_file(n: int) -> Generator[FileIO]:
             yield f
     else:
         yield sys.stdin
+
+def print_results(part1: any, part2: any) -> None:
+    print("Part 1:", part1)
+    print("Part 2:", part2)

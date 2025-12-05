@@ -1,10 +1,7 @@
-from utils import input_file
-from collections import defaultdict
+from utils import input_file, print_results
 
 with input_file(3) as f:
     inp = [list(map(int, line.strip())) for line in f.readlines()]
-
-total = 0
 
 def find_best(bank: list[int], goal: int) -> tuple[int, int]:
     found = []
@@ -18,20 +15,18 @@ def find_best(bank: list[int], goal: int) -> tuple[int, int]:
         while found and remaining > 0 and found[-1] < j:
             found.pop()
             remaining -= 1
-            # print(">", remaining, found)
         found.append(j)
-    
-    # print(found)
 
     joltage = 0
     for m, i in enumerate(reversed(found[:goal])):
         joltage +=  i * pow(10, m)
     
     return joltage
-        
-for bank in inp:
-    v = find_best(bank, 12)
-    # print(v)
-    total += v
 
-print(total)
+p1 = p2 = 0
+
+for bank in inp:
+    p1 += find_best(bank, 2)
+    p2 += find_best(bank, 12)
+
+print_results(p1, p2)
